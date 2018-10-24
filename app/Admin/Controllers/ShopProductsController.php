@@ -10,6 +10,7 @@ use Encore\Admin\Grid;
 use Encore\Admin\Columms;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Facades\Admin;
 
 class ShopProductsController extends Controller
 {
@@ -53,12 +54,31 @@ class ShopProductsController extends Controller
      */
     public function edit($id, Content $content)
     {
-        return $content
-            ->header('Edit')
-            ->description('description')
-            ->body($this->form()->edit($id));
-    }
+        return Admin::content(function (Content $content) use ($id) {
 
+            $content->header('Sửa hình ảnh');
+            // $content->description('description');
+
+            $content->body($this->form()->edit($id));
+        });
+    }
+    protected function form()
+    {
+        $form = new Form(new ShopProduct);
+
+        $form->display('id','ID');
+        $form->text('name','Name');
+        $form->text('sku','Sku');
+        $form->html('<b>Hỗ trợ SEO</b>');
+        
+        $form->disableViewCheck();
+        $form->disableEditingCheck();
+        $form->tools(function (Form\Tools $tools) {
+            $tools->disableView();
+        });
+
+        return $form;
+    }
     /**
      * Create interface.
      *
@@ -81,9 +101,9 @@ class ShopProductsController extends Controller
     protected function grid()
     {
         $grid = new Grid(new ShopProduct);
-        $grid->id('ID');
+        $grid->id('ID')->sortable();
         // $grid->column('name', 'Username');
-        $grid->sku('ABC');
+        $grid->sku('ABC')->editable();
         $grid->type('Release?')->display(function ($released) {
             return $released ? 'yes' : 'no';
         });
@@ -99,6 +119,14 @@ class ShopProductsController extends Controller
             return "mailto:$email";
         });
         // $grid->perPages([10, 20, 30, 40, 50]);
+        // $grid->status()->switch();
+
+        // set the `text`、`color`、and `value`
+        $states = [
+            'on'  => ['value' => 1, 'text' => 'YES', 'color' => 'primary'],
+            'off' => ['value' => 2, 'text' => 'NO', 'color' => 'default'],
+        ];
+        $grid->status()->switch($states);
         return $grid;
     }
 
@@ -124,14 +152,5 @@ class ShopProductsController extends Controller
      *
      * @return Form
      */
-    protected function form()
-    {
-        $form = new Form(new ShopProduct);
-
-        $form->display('ID');
-        $form->display('Name');
-        $form->display('Sku');
-
-        return $form;
-    }
+    
 }
