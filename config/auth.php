@@ -42,7 +42,12 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
+            'driver' => 'passport',
+            'provider' => 'employees',
+        ],
+
+        'admin' => [
+            'driver' => 'session',
             'provider' => 'users',
         ],
     ],
@@ -68,6 +73,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\User::class,
+        ],
+
+        'employees' => [
+            'driver' => 'eloquent',
+            'model' => App\Employees::class,
         ],
 
         // 'users' => [
